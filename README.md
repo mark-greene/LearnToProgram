@@ -3,4 +3,4 @@ LearnToProgram
 
 Tealeaf Training
 
-Exercizes from book.
+Exercises  from the book.
