@@ -31,5 +31,26 @@ def grandma
 
 end
 
+def leep()
+
+  puts 'Enter the year to start'
+  start_year = gets.chomp
+  puts 'Enter the year to end'
+  end_year = gets.chomp
+  year = start_year.to_i
+  while year <= end_year.to_i
+    if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0))
+      puts year.to_s + " is a leap year."
+    end
+    year += 1
+  end
+
+end
+
+puts 'Run the beer code'
 beer()
+puts 'Run the grandma code'
 grandma()
+puts 'Run the leap year code'
+leep()
+
