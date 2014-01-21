@@ -8,7 +8,7 @@ def old_roman_numeral  number
     100  => 'C',
     500  => 'D',
     1000 => 'M'
-  };
+  }
 
   convert_to_roman_numeral conversion, number
 end
@@ -28,7 +28,7 @@ def roman_numeral number
     500  => 'D',
     900  => 'CM',
     1000 => 'M'
-  };
+  }
 
   convert_to_roman_numeral conversion, number
 end
