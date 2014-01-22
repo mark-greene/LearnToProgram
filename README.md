@@ -9,4 +9,4 @@ chapter7.rb
 
 chapter8.rb
 
-chapter9.rb -> rspec
+chapter9.rb -> rspec --format nested
