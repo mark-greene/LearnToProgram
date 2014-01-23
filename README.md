@@ -1,9 +1,6 @@
-#LearnToProgram
-==============
+#LearnToProgram - Tealeaf Training
 
-## Tealeaf Training
-
-### Exercises  from the book
+## Exercises  from the book
 
 * chapter7.rb
   * 99 Bottles of Beer
