@@ -62,12 +62,6 @@ def english_number number
 
   number_string = '' # This is the string we will return.
 
-  ones_place = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-
-  tens_place = ['ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
-
-  teen_place = ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
-
   # "left" is how much of the number we still have left to write out.
   # "write" is the part we are writing out right now.
   left = number
@@ -78,43 +72,12 @@ def english_number number
   number_string, left = decimal_place 1000, 'thousand', number_string, left
   number_string, left = decimal_place 100, 'hundred', number_string, left
 
-  write = left/10 # How many tens left?
-  left = left - write*10 # Subtract off those tens.
+  number_string, left = tens_place number_string, left
 
-  if write > 0
-    if ((write == 1) and (left > 0))
-      # Since we can't write "tenty-two" instead of
-      # "twelve", we have to make a special exception
-      # for these.
-      number_string = number_string + teen_place[left-1]
-      # The "-1" is because teen_place[3] is
-      # 'fourteen', not 'thirteen'.
-      # Since we took care of the digit in the
-      # ones place already, we have nothing left to write.
-      left = 0
-    else
-      number_string = number_string + tens_place[write-1]
-      # The "-1" is because tens_place[3] is
-      # 'forty', not 'thirty'.
-    end
-
-    if left > 0
-      # So we don't write 'sixtyfour'...
-      number_string = number_string + '-'
-    end
-  end
-
-  write = left # How many ones left to write out?
-  left = 0 # Subtract off those ones.
-
-  if write > 0
-    number_string = number_string + ones_place[write-1]
-    # The "-1" is because ones_place[3] is
-    # 'four', not 'three'.
-  end
+  number_string, left = ones_place number_string, left
 
   # Now we just return "number_string"...
-  number_string
+  return number_string
 end
 
 def  decimal_place number, name, number_string, left
@@ -131,3 +94,43 @@ def  decimal_place number, name, number_string, left
   return number_string, left
 end
 
+def tens_place number_string, left
+
+  tens = ['ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+  teens = ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+
+  write = left/10 # How many tens left?
+  left = left - write*10 # Subtract off those tens.
+
+  if write > 0
+    if ((write == 1) and (left > 0))
+      # Since we can't write "tenty-two" instead of "twelve",
+      # we have to make a special exception for these.
+      number_string = number_string + teens[left-1]
+      # Since we took care of the digit in the ones place already,
+      # we have nothing left to write.
+      left = 0
+    else
+      number_string = number_string + tens[write-1]
+    end
+
+    if left > 0
+      # So we don't write 'sixtyfour'...
+      number_string = number_string + '-'
+    end
+  end
+  return number_string, left
+end
+
+def ones_place  number_string, left
+
+  ones = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+
+  write = left # How many ones left to write out?
+  left = 0 # Subtract off those ones.
+
+  if write > 0
+    number_string = number_string + ones[write]
+  end
+  return number_string, left
+end
