@@ -78,7 +78,7 @@ CARDS = []
     card_value = card_value dealer_up_card
     if hand_value < 12
       strategy =  :hit
-    elsif card_value > 2 && card_value < 7
+    elsif hand_value > 16 || (card_value > 2 && card_value < 7)
       strategy =  :stand
     elsif hand_value < (card_value + 10)
       strategy =  :hit
