@@ -21,3 +21,8 @@ LearnToProgram - Tealeaf Training
   * Recursive Sort
   * Dictionary Sort
   * English Numbers
+
+### Play time
+
+* cards.rb
+  * blackjack
