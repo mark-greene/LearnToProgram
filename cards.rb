@@ -30,6 +30,7 @@ CARDS = []
 
   def card_value card
     rank, suit = card
+
     case rank
     when 'Ace'
       11
