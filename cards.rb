@@ -76,9 +76,9 @@ CARDS = []
     strategy = :stand
     hand_value = hand_value hand
     card_value = card_value dealer_up_card
-    if hand_value < 12
+    if hand_value <= 11
       strategy =  :hit
-    elsif hand_value > 16 || (card_value > 2 && card_value < 7)
+    elsif hand_value >= 17 || (card_value > 2 && card_value < 7)
       strategy =  :stand
     elsif hand_value < (card_value + 10)
       strategy =  :hit
@@ -95,7 +95,7 @@ CARDS = []
     v = hand_value hand
     case v
     when 21
-      hand.count == 2 && :natural || 21
+      hand.count == 2 && :blackjack || 21
     when 12..20
       v
     when 0..11
@@ -107,14 +107,18 @@ CARDS = []
 
 
 # Main
-cards = shuffle_cards load_shoe 6
+number_of_decks = 6
+percent_reserved = 25
+number_of_reserve_cards = ((52 * number_of_decks).to_f * percent_reserved.to_f / 100).to_i
+puts "Playing blackjack with #{number_of_decks} decks and #{number_of_reserve_cards} cards in reserve"
+cards = shuffle_cards load_shoe number_of_decks
 cards = cut_cards cards
 
 player_wins = 0
 dealer_wins = 0
 pushes = 0
 
-while cards.count > 24
+while cards.count > number_of_reserve_cards
 
   player = []
   dealer = []
@@ -125,22 +129,22 @@ while cards.count > 24
     dealer += [card]
   end
 
-  while player_strategy(player, dealer[1]) == :hit do
+  while player_strategy(player, dealer[1]) == :hit
     card = draw_card cards
     player += [card]
   end
 
-  while dealer_strategy(dealer) == :hit do
+  while dealer_strategy(dealer) == :hit
     card = draw_card cards
     dealer += [card]
   end
 
   player_result = hand_result(player)
   dealer_result = hand_result(dealer)
-  if  (dealer_result == :natural && player_result != :natural) || player_result == :bust
+  if  (dealer_result == :blackjack && player_result != :blackjack) || player_result == :bust
     puts "Dealer wins with #{dealer_result}"
     dealer_wins += 1
-  elsif player_result == :natural || dealer_result == :bust
+  elsif player_result == :blackjack || dealer_result == :bust
     puts "Player wins with #{player_result}"
     player_wins += 1
   elsif dealer_result > player_result
