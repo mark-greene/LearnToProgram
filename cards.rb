@@ -2,7 +2,7 @@
 SUITS = ['Hearts', 'Spades', 'Diamonds', 'Clubs']
 RANKS = [*2..10, 'Jack', 'Queen', 'King', 'Ace']
 CARDS = []
-SUITS.product( RANKS ) { | suit, rank | CARDS << [rank, suit] }
+  SUITS.product( RANKS ) { | suit, rank | CARDS << [rank, suit] }
 
   def print_cards cards
     puts "#{cards.count}-card deck"
@@ -76,11 +76,11 @@ SUITS.product( RANKS ) { | suit, rank | CARDS << [rank, suit] }
     strategy = :stand
     hand_value = hand_value hand
     card_value = card_value dealer_up_card
-    if hand_value <=11
+    if hand_value < 12
       strategy =  :hit
-    elsif card_value >= 2 && card_value <= 6
+    elsif card_value > 2 && card_value < 7
       strategy =  :stand
-    elsif hand_value < card_value
+    elsif hand_value < (card_value + 10)
       strategy =  :hit
     end
     strategy
@@ -96,10 +96,10 @@ SUITS.product( RANKS ) { | suit, rank | CARDS << [rank, suit] }
     case v
     when 21
       hand.count == 2 && :natural || 21
-    when 4..20
+    when 12..20
       v
-    when 0..3
-      raise "error, illegal resulting hand value"
+    when 0..11
+      raise "error, illegal hand"
     else
       :bust
     end
@@ -110,8 +110,8 @@ SUITS.product( RANKS ) { | suit, rank | CARDS << [rank, suit] }
 cards = shuffle_cards load_shoe 6
 cards = cut_cards cards
 
-wins = 0
-losses = 0
+player_wins = 0
+dealer_wins = 0
 pushes = 0
 
 while cards.count > 24
@@ -137,20 +137,20 @@ while cards.count > 24
 
   player_result = hand_result(player)
   dealer_result = hand_result(dealer)
-  if player_result == :natural || dealer_result == :bust
-    puts "Player wins with #{player_result}"
-    wins += 1
-  elsif  dealer_result == :natural || player_result == :bust
+  if  (dealer_result == :natural && player_result != :natural) || player_result == :bust
     puts "Dealer wins with #{dealer_result}"
-    losses += 1
-  elsif player_result > dealer_result
+    dealer_wins += 1
+  elsif player_result == :natural || dealer_result == :bust
     puts "Player wins with #{player_result}"
-    wins += 1
+    player_wins += 1
   elsif dealer_result > player_result
     puts "Dealer wins with #{dealer_result}"
-    losses += 1
+    dealer_wins += 1
+  elsif player_result > dealer_result
+    puts "Player wins with #{player_result}"
+    player_wins += 1
   else
-    puts "Push - #{dealer_result}"
+    puts "Push with #{dealer_result}"
     pushes += 1
   end
 # print_cards player
@@ -158,4 +158,4 @@ while cards.count > 24
 
 end
 
-puts "Wins - #{wins}, Losses - #{losses}, Push - #{pushes}"
+puts "Player Wins: #{player_wins}, Pushes: #{pushes}, Dealer Wins: #{dealer_wins}"
