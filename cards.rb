@@ -77,7 +77,7 @@ CARDS = []
     strategy = :stand
     hand_value = hand_value hand
     card_value = card_value dealer_up_card
-    if hand_value <= 11
+    if hand_value <= 11 || (hand_value == 12 && card_value == 2)
       strategy =  :hit
     elsif hand_value >= 17 || (card_value > 2 && card_value < 7)
       strategy =  :stand
@@ -143,19 +143,19 @@ while cards.count > number_of_reserve_cards
   player_result = hand_result(player)
   dealer_result = hand_result(dealer)
   if  (dealer_result == :blackjack && player_result != :blackjack) || player_result == :bust
-    puts "Dealer wins with #{dealer_result}"
+#    puts "Dealer wins with #{dealer_result}"
     dealer_wins += 1
   elsif player_result == :blackjack || dealer_result == :bust
-    puts "Player wins with #{player_result}"
+#    puts "Player wins with #{player_result}"
     player_wins += 1
   elsif dealer_result > player_result
-    puts "Dealer wins with #{dealer_result}"
+#    puts "Dealer wins with #{dealer_result}"
     dealer_wins += 1
   elsif player_result > dealer_result
-    puts "Player wins with #{player_result}"
+#    puts "Player wins with #{player_result}"
     player_wins += 1
   else
-    puts "Push with #{dealer_result}"
+#    puts "Push with #{dealer_result}"
     pushes += 1
   end
 # print_cards player
