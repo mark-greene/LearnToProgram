@@ -1,4 +1,4 @@
-# cards.rb
+# blackjack.rb
 SUITS = ['Hearts', 'Spades', 'Diamonds', 'Clubs']
 RANKS = [*2..10, 'Jack', 'Queen', 'King', 'Ace']
 CARDS = []
@@ -17,6 +17,15 @@ CARDS = []
 
   def cut_cards cards
     cards.rotate! cards.count / 2
+  end
+
+  def cards_contain cards, card
+    cards.each do | rank, suit |
+      if rank == card
+        return true
+      end
+    end
+    false
   end
 
   def draw_card cards
@@ -77,13 +86,25 @@ CARDS = []
     strategy = :stand
     hand_value = hand_value hand
     card_value = card_value dealer_up_card
-    if hand_value <= 11 || (hand_value == 12 && card_value == 2)
-      strategy =  :hit
-    elsif hand_value >= 17 || (card_value > 2 && card_value < 7)
-      strategy =  :stand
-    elsif hand_value < (card_value + 10)
-      strategy =  :hit
+
+    if hand.count == 2 && cards_contain(hand, 'Ace')
+      if hand_value >= 19
+        strategy =  :stand
+      elsif hand_value == 18 && [2, 7, 8].include?(card_value)
+        strategy =  :stand
+      else
+        strategy = :hit
+      end
+    else
+      if hand_value <= 11 || (hand_value == 12 && card_value.between?(2, 3))
+        strategy =  :hit
+      elsif hand_value >= 17 || card_value.between?(2, 6)
+        strategy =  :stand
+      elsif hand_value < (card_value + 10)
+        strategy =  :hit
+      end
     end
+
     strategy
   end
 
@@ -107,60 +128,63 @@ CARDS = []
   end
 
 
-# Main
-number_of_decks = 6
-percent_reserved = 25
-number_of_reserve_cards = ((52 * number_of_decks).to_f * percent_reserved.to_f / 100).to_i
-puts "Playing blackjack with #{number_of_decks} decks and #{number_of_reserve_cards} cards in reserve"
-cards = shuffle_cards load_shoe number_of_decks
-cards = cut_cards cards
+def game_simulation number_of_decks = 6, percent_reserved = 25.0
 
-player_wins = 0
-dealer_wins = 0
-pushes = 0
+  cards = load_shoe number_of_decks
 
-while cards.count > number_of_reserve_cards
+  number_of_reserve_cards = (cards.count.to_f * percent_reserved / 100).to_i
+#  puts "Playing blackjack with #{number_of_decks} decks (#{cards.count} cards)" +
+#      " and #{percent_reserved}% (#{number_of_reserve_cards} cards) in reserve"
 
-  player = []
-  dealer = []
-  for i in 1..2
-    card = draw_card cards
-    player += [card]
-    card = draw_card cards
-    dealer += [card]
+  dealer_wins = 0
+  player_wins = 0
+  pushes = 0
+
+  cards = shuffle_cards cards
+  cards = cut_cards cards
+
+  while cards.count > number_of_reserve_cards
+
+    player = []
+    dealer = []
+    for i in 1..2
+      card = draw_card cards
+      player += [card]
+      card = draw_card cards
+      dealer += [card]
+    end
+
+    while player_strategy(player, dealer[1]) == :hit
+      card = draw_card cards
+      player += [card]
+    end
+
+    while dealer_strategy(dealer) == :hit
+      card = draw_card cards
+      dealer += [card]
+    end
+
+    player_result = hand_result(player)
+    dealer_result = hand_result(dealer)
+    if  (dealer_result == :blackjack && player_result != :blackjack) || player_result == :bust
+  #    puts "Dealer wins with #{dealer_result}"
+      dealer_wins += 1
+    elsif player_result == :blackjack || dealer_result == :bust
+  #    puts "Player wins with #{player_result}"
+      player_wins += 1
+    elsif dealer_result > player_result
+  #    puts "Dealer wins with #{dealer_result}"
+      dealer_wins += 1
+    elsif player_result > dealer_result
+  #    puts "Player wins with #{player_result}"
+      player_wins += 1
+    else
+  #    puts "Push with #{dealer_result}"
+      pushes += 1
+    end
+  # print_cards player
+  # print_cards dealer
   end
 
-  while player_strategy(player, dealer[1]) == :hit
-    card = draw_card cards
-    player += [card]
-  end
-
-  while dealer_strategy(dealer) == :hit
-    card = draw_card cards
-    dealer += [card]
-  end
-
-  player_result = hand_result(player)
-  dealer_result = hand_result(dealer)
-  if  (dealer_result == :blackjack && player_result != :blackjack) || player_result == :bust
-#    puts "Dealer wins with #{dealer_result}"
-    dealer_wins += 1
-  elsif player_result == :blackjack || dealer_result == :bust
-#    puts "Player wins with #{player_result}"
-    player_wins += 1
-  elsif dealer_result > player_result
-#    puts "Dealer wins with #{dealer_result}"
-    dealer_wins += 1
-  elsif player_result > dealer_result
-#    puts "Player wins with #{player_result}"
-    player_wins += 1
-  else
-#    puts "Push with #{dealer_result}"
-    pushes += 1
-  end
-# print_cards player
-# print_cards dealer
-
+  return dealer_wins, player_wins, pushes
 end
-
-puts "Player Wins: #{player_wins}, Pushes: #{pushes}, Dealer Wins: #{dealer_wins}"
