@@ -98,21 +98,9 @@ describe "strategy" do
     it "should :stand on 19 or better" do
       hand = hand_builder 8, 'Ace'
       expect(player_strategy hand, [2, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [3, 'Clubs']).to eq :stand
       expect(player_strategy hand, [6, 'Clubs']).to eq :stand
       expect(player_strategy hand, [7, 'Clubs']).to eq :stand
-      expect(player_strategy hand, ['Ace', 'Clubs']).to eq :stand
-      hand = hand_builder 9, 'Ace'
-      expect(player_strategy hand, [2, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [3, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [6, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [7, 'Clubs']).to eq :stand
-      expect(player_strategy hand, ['Ace', 'Clubs']).to eq :stand
-      hand = hand_builder 10, 'Ace'
-      expect(player_strategy hand, [2, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [3, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [6, 'Clubs']).to eq :stand
-      expect(player_strategy hand, [7, 'Clubs']).to eq :stand
+      expect(player_strategy hand, [9, 'Clubs']).to eq :stand
       expect(player_strategy hand, ['Ace', 'Clubs']).to eq :stand
     end
 
@@ -128,7 +116,6 @@ describe "strategy" do
       expect(player_strategy hand, [3, 'Clubs']).to eq :hit
       expect(player_strategy hand, [6, 'Clubs']).to eq :hit
       expect(player_strategy hand, [9, 'Clubs']).to eq :hit
-      expect(player_strategy hand, ['Jack', 'Clubs']).to eq :hit
       expect(player_strategy hand, ['Ace', 'Clubs']).to eq :hit
     end
 
@@ -139,7 +126,7 @@ describe "strategy" do
       expect(player_strategy hand, [6, 'Clubs']).to eq :hit
       expect(player_strategy hand, [7, 'Clubs']).to eq :hit
       expect(player_strategy hand, [8, 'Clubs']).to eq :hit
-      expect(player_strategy hand, [9, 'Clubs']).to eq :hit
+      expect(player_strategy hand, [10, 'Clubs']).to eq :hit
       expect(player_strategy hand, ['Jack', 'Clubs']).to eq :hit
       expect(player_strategy hand, ['Ace', 'Clubs']).to eq :hit
       hand = hand_builder 6, 'Ace'
