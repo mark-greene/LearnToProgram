@@ -24,5 +24,5 @@ LearnToProgram - Tealeaf Training
 
 ### Play time
 
-* cards.rb
-  * blackjack
+* blackjack.rb
+  * blackjack simulation
