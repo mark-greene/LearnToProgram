@@ -28,16 +28,16 @@ CARDS = []
     false
   end
 
-  def draw_card cards
-    cards.shift
-  end
-
   def print_card card
     rank, suit = card
     puts "#{rank} of #{suit}"
   end
 
-  def card_value card
+  def draw_card cards
+    cards.shift
+  end
+
+  def value_of_card card
     rank, suit = card
 
     case rank
@@ -54,21 +54,13 @@ CARDS = []
     end
   end
 
-  def load_shoe number_of_decks
-    shoe = []
-    for i in 1..number_of_decks
-      shoe += CARDS
-    end
-    shoe
-  end
-
-  def hand_value hand
+  def value_of_hand hand
     ace_count = 0
     value = 0
 
     hand.each do | card |
       rank, suit = card
-      value += card_value card
+      value += value_of_card card
       if rank == 'Ace'
         ace_count += 1
       end
@@ -78,14 +70,13 @@ CARDS = []
       value -= 10
       ace_count -= 1
     end
-
     value
   end
 
   def player_strategy hand, dealer_up_card
     strategy = :stand
-    hand_value = hand_value hand
-    card_value = card_value dealer_up_card
+    hand_value = value_of_hand hand
+    card_value = value_of_card dealer_up_card
 
     if hand.count == 2 && cards_contain(hand, 'Ace')
       if hand_value >= 19
@@ -104,17 +95,16 @@ CARDS = []
         strategy =  :hit
       end
     end
-
     strategy
   end
 
   def dealer_strategy hand
-    v = hand_value hand
+    v = value_of_hand hand
     v >= 17 && :stand || :hit
   end
 
-  def hand_result hand
-    v = hand_value hand
+  def results_of_hand hand
+    v = value_of_hand hand
     case v
     when 21
       hand.count == 2 && :blackjack || 21
@@ -125,6 +115,14 @@ CARDS = []
     else
       :bust
     end
+  end
+
+  def load_shoe number_of_decks
+    shoe = []
+    for i in 1..number_of_decks
+      shoe += CARDS
+    end
+    shoe
   end
 
 
@@ -164,8 +162,8 @@ def game_simulation number_of_decks = 6, percent_reserved = 25.0
       dealer += [card]
     end
 
-    player_result = hand_result(player)
-    dealer_result = hand_result(dealer)
+    player_result = results_of_hand(player)
+    dealer_result = results_of_hand(dealer)
     if  (dealer_result == :blackjack && player_result != :blackjack) || player_result == :bust
   #    puts "Dealer wins with #{dealer_result}"
       dealer_wins += 1
