@@ -26,3 +26,5 @@ LearnToProgram - Tealeaf Training
 
 * blackjack.rb
   * blackjack simulation
+* blackjack2.rb
+  * blackjack simulation with Classes
