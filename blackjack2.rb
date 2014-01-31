@@ -9,6 +9,7 @@ class Card
   def initialize rank, suit = :Clubs
     if RANKS.include?(rank) && SUITS.include?(suit)
       @card = [rank, suit]
+      @value =  self.rank_value
     else
       raise ArgumentError, "invalud :rank or :suit"
     end
@@ -27,7 +28,7 @@ class Card
     @card[1]
   end
 
-  def value
+  def rank_value
     case self.rank
     when :Ace
       11
@@ -41,6 +42,7 @@ class Card
       self.rank
     end
   end
+
 end
 
 class Deck
@@ -86,21 +88,18 @@ class Deck
 end
 
 class Hand
-  attr_reader   :count, :value
+  attr_reader   :count, :value, :result
 
   def initialize hand = nil
     if hand.nil?
       @hand =  []
     else
       @hand = [hand]
+      @value = self.hand_value
     end
   end
 
-  def count
-    @hand.count
-  end
-
-  def value
+  def hand_value
     ace_count = 0
     value = 0
 
@@ -118,8 +117,26 @@ class Hand
     value
   end
 
+  def result
+    case self.value
+    when 21
+      self.count == 2 && :blackjack || 21
+    when 12..20
+      value
+    when 0..11
+      raise "error, illegal hand"
+    else
+      :bust
+    end
+  end
+
   def add_card card
     @hand += [card]
+    @value = self.hand_value
+  end
+
+  def count
+    @hand.count
   end
 
   def card position
@@ -133,19 +150,6 @@ class Hand
       end
     end
     false
-  end
-
-  def result
-    case self.value
-    when 21
-      self.count == 2 && :blackjack || 21
-    when 12..20
-      value
-    when 0..11
-      raise "error, illegal hand"
-    else
-      :bust
-    end
   end
 
 end

@@ -11,24 +11,39 @@ describe "Card" do
     expect(@card2).to be_a_kind_of Card
   end
 
-  it "should raise ArgumentError for invalid arguments" do
+  it "should raise ArgumentError for invalid cards" do
     expect{ Card.new(1, :Hearts) }.to raise_error ArgumentError
     expect{ Card.new(:Ace, :fred) }.to raise_error ArgumentError
   end
 
-  it "should return the correct value" do
+  it "should return the card's rank" do
+    expect(@card1.rank).to eq 2
+    expect(@card2.rank).to eq :Ace
+  end
+
+  it "should return the card's suit" do
+    expect(@card1.suit).to eq :Hearts
+    expect(@card2.suit).to eq :Spades
+  end
+
+  it "should return the card's value" do
     expect(@card1.value).to eq 2
     expect(@card2.value).to eq 11
   end
 end
 
 describe "Deck" do
+  NUMBER_OF_DECKS = 2
   before do
-    @deck = Deck.new(2)
+    @deck = Deck.new(NUMBER_OF_DECKS)
   end
 
   it "should create a valid deck" do
     expect(@deck).to be_a_kind_of Deck
+  end
+
+  it "should count the number of cards" do
+    expect(@deck.count).to eq (52 * NUMBER_OF_DECKS)
   end
 
   it "should shuffle a deck" do
@@ -53,6 +68,60 @@ describe "Deck" do
       expect(card).to be_a_kind_of Card
     end
     expect(@deck.count).to be <  count/3
+  end
+end
+
+describe "Hand" do
+  before do
+  end
+
+  it "should create a valid hand" do
+    hand = Hand.new
+    expect(hand).to be_a_kind_of Hand
+  end
+
+  it "should count the number of cards" do
+    hand = Hand.new
+    expect(hand.count).to eq (0)
+  end
+
+  it "should add cards to hand" do
+    hand = Hand.new
+    hand.add_card Card.new(2, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    expect(hand.count).to eq (2)
+  end
+
+  it "should get a card" do
+    hand = Hand.new
+    hand.add_card Card.new(2, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    expect(hand.card(1).value).to eq (Card.new(:Ace, :Clubs).value)
+  end
+
+  it "should get a hand's value" do
+    hand = Hand.new
+    hand.add_card Card.new(2, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    expect(hand.value).to eq (13)
+  end
+
+  it "should get a hand's result" do
+    hand = Hand.new
+    hand.add_card Card.new(10, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    expect(hand.result).to eq (:blackjack)
+    hand.add_card Card.new(10, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    expect(hand.result).to eq (:bust)
+  end
+
+  it "should return true if hand contains a card" do
+    hand = Hand.new
+    hand.add_card Card.new(2, :Clubs)
+    hand.add_card Card.new(:Ace, :Clubs)
+    hand.add_card Card.new(2, :Clubs)
+    expect(hand.contains? :Ace).to eq (true)
   end
 end
 
