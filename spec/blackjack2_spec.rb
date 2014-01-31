@@ -57,24 +57,132 @@ describe "Deck" do
 end
 
 describe "Blackjack" do
+NUMBER_OF_RUNS = 10000
 
-  it "should run successfully" do
-    total_games = 0
-    total_wins = 0
-    total_non_losses = 0
+  before do
+    @game = Blackjack.new
+  end
 
-    for i in 1..10000 do
-      game = Blackjack.new
-      game.play
-      total_games += game.total
-      total_wins += game.wins
-      total_non_losses += (game.wins + game.pushes)
+  context "dealer strategy" do
+    it "should :hit when hand is less than 17" do
+      hand = @game.hand_builder 5, 5, 5
+      expect(@game.dealer_strategy hand).to eq :hit
     end
 
-    percent = total_wins / total_games.to_f * 100
-    puts "In #{total_games} games, Player wins #{"%0.2f" % percent}%"
-    percent = total_non_losses / total_games.to_f * 100
-    puts "    Player doesn't loose #{"%0.2f" %percent}%"
+    it "should :stand when hand is  17 or better" do
+      hand = @game.hand_builder 5, 5, 5, 5
+      expect(@game.dealer_strategy hand).to eq :stand
+    end
+  end
+
+  context "player strategy" do
+    it "should :hit 11 or less (can't bust)" do
+      hand = @game.hand_builder 5, 6
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+    end
+
+    it "should :hit on 12 when dealer has 2 or 3" do
+      hand = @game.hand_builder 5, 5, 2
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :hit
+    end
+
+    it "should :stand when dealer has a :bust card (3..6)" do
+      hand = @game.hand_builder 5, 5, 2
+      expect(@game.player_strategy hand, Card.new(4, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :stand
+      hand = @game.hand_builder 5, 5, 3
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :stand
+    end
+
+    it "should :hit on 16 or less when dealer has 7 or better" do
+      hand = @game.hand_builder 5, 5, 2
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+      hand = @game.hand_builder 5, 5, 6
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+    end
+
+    it "should :stand on 17 or better" do
+      hand = @game.hand_builder 5, 5, 7
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :stand
+      hand = @game.hand_builder 5, 5, 10
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :stand
+    end
+  end
+
+  context "player strategy with an :Ace" do
+    it "should :stand on 19 or better" do
+      hand = @game.hand_builder 8, :Ace
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(9, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :stand
+    end
+
+    it "should :stand on 18 when dealer has 2, 7 or 8" do
+      hand = @game.hand_builder 7, :Ace
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :stand
+      expect(@game.player_strategy hand, Card.new(8, :Clubs)).to eq :stand
+    end
+
+    it "should :hit on 18 when dealer dealer does not have 2, 7 or 8" do
+      hand = @game.hand_builder 7, :Ace
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(6, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(9, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+    end
+
+    it "should :hit on 17 or less" do
+      hand = @game.hand_builder 2, :Ace
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(8, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(10, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Jack, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+      hand = @game.hand_builder 6, :Ace
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(3, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(2, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(7, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(8, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(10, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Jack, :Clubs)).to eq :hit
+      expect(@game.player_strategy hand, Card.new(:Ace, :Clubs)).to eq :hit
+    end
+  end
+
+  context "game simulation" do
+    it "should run successfully" do
+
+      for i in 1..NUMBER_OF_RUNS do
+        @game.play
+      end
+
+      percent = @game.wins / @game.total.to_f * 100
+      puts "    In #{@game.total} games, Player wins #{"%0.2f" % percent}%"
+      percent = (@game.wins + @game.pushes) / @game.total.to_f * 100
+      puts "       Player doesn't loose #{"%0.2f" %percent}%"
+    end
   end
 
 end
