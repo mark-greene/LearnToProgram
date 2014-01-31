@@ -8,7 +8,8 @@ class Card
 
   def initialize rank, suit = :Clubs
     if RANKS.include?(rank) && SUITS.include?(suit)
-      @card = [rank, suit]
+      @rank = rank
+      @suit = suit
       @value =  self.rank_value
     else
       raise ArgumentError, "invalud :rank or :suit"
@@ -16,16 +17,7 @@ class Card
   end
 
   def to_s
-    rank, suit = @card
-    "#{rank} of #{suit}"
-  end
-
-  def rank
-    @card[0]
-  end
-
-  def suit
-    @card[1]
+    "#{@rank} of #{@suit}"
   end
 
   def rank_value
@@ -88,11 +80,12 @@ class Deck
 end
 
 class Hand
-  attr_reader   :count, :value, :result
+  attr_reader   :count, :value
 
   def initialize hand = nil
     if hand.nil?
       @hand =  []
+      @value = nil
     else
       @hand = [hand]
       @value = self.hand_value
