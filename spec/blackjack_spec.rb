@@ -6,29 +6,6 @@ def hand_builder *cards
   hand
 end
 
-describe "simulation" do
-
-  it "should run successfully" do
-    total_games = 0
-    total_wins = 0
-    total_non_losses = 0
-    for i in 1..10000 do
-      losses, wins, pushes = game_simulation
-  #    puts "Player Wins: #{wins}, Pushes: #{pushes}, Dealer Wins: #{losses}"
-      total_games += (losses + wins + pushes)
-      total_wins += wins
-      total_non_losses += (wins + pushes)
-    end
-  #  puts "Player Wins: #{total_wins}, Non-losses: #{total_non_losses}, Dealer Wins: #{losses}"
-
-    percent = total_wins / total_games.to_f * 100
-    puts "In #{total_games} games, Player wins #{"%0.2f" % percent}%"
-    percent = total_non_losses / total_games.to_f * 100
-    puts "    Player doesn't loose #{"%0.2f" %percent}%"
-  end
-
-end
-
 describe "strategy" do
 
   before do
@@ -139,6 +116,29 @@ describe "strategy" do
       expect(player_strategy hand, ['Jack', 'Clubs']).to eq :hit
       expect(player_strategy hand, ['Ace', 'Clubs']).to eq :hit
     end
+  end
+
+end
+
+describe "simulation" do
+
+  it "should run successfully" do
+    total_games = 0
+    total_wins = 0
+    total_non_losses = 0
+    for i in 1..10000 do
+      losses, wins, pushes = game_simulation
+  #    puts "Player Wins: #{wins}, Pushes: #{pushes}, Dealer Wins: #{losses}"
+      total_games += (losses + wins + pushes)
+      total_wins += wins
+      total_non_losses += (wins + pushes)
+    end
+  #  puts "Player Wins: #{total_wins}, Non-losses: #{total_non_losses}, Dealer Wins: #{losses}"
+
+    percent = total_wins / total_games.to_f * 100
+    puts "  In #{total_games} games, Player wins #{"%0.2f" % percent}%"
+    percent = total_non_losses / total_games.to_f * 100
+    puts "     Player doesn't loose #{"%0.2f" %percent}%"
   end
 
 end
