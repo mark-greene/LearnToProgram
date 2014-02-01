@@ -46,9 +46,8 @@ class Deck
     @number_of_decks = number_of_decks
     @percent_reserved = percent_reserved
     @cards = []
-    for i in 1..@number_of_decks do
-      Card::SUITS.product( Card::RANKS ) { | suit, rank | @cards << Card.new(rank, suit) }
-    end
+    Card::SUITS.product( Card::RANKS ) { | suit, rank | @cards << Card.new(rank, suit) }
+    @cards = @cards * @number_of_decks
     @number_of_reserve_cards = (@cards.count.to_f * @percent_reserved / 100).to_i
   end
 
@@ -100,7 +99,7 @@ class Hand
     when 12..20
       value
     when 0..11
-      raise "error, illegal hand"
+      raise "error, #{self.value} is an illegal hand"
     else
       :bust
     end
